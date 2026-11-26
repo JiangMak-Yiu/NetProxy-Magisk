@@ -2,6 +2,8 @@ package com.fanjv.netproxy.feature.dashboard.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.fanjv.netproxy.R
 import com.fanjv.netproxy.core.module.ModuleAvailability
 import com.fanjv.netproxy.core.module.ServiceRepository
@@ -48,6 +50,9 @@ internal data class CatalogDashboardUiState(
     val memoryUsage: Float = 0f,
     val trafficSamples: List<TrafficSample> = emptyList(),
     val internalIp: String = "--",
+    val latencyTargets: List<LatencyTarget> = DefaultLatencyTargets,
+    val latencyValues: Map<String, Long?> = emptyMap(),
+    val latencyTesting: Boolean = false,
     val operation: String = "",
     val notice: UiText = UiText.Empty,
     val noticeId: Long = 0
@@ -69,11 +74,13 @@ internal data class CatalogDashboardUiState(
 internal class CatalogDashboardViewModel(
     private val repository: ServiceRepository,
     totalMemoryBytes: Long,
+    private val prefs: SharedPreferences,
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
 ) : ViewModel(scope) {
     private val _state = MutableStateFlow(CatalogDashboardUiState())
     val state: StateFlow<CatalogDashboardUiState> = _state.asStateFlow()
     private var eventsJob: Job? = null
+    private var latencyJob: Job? = null
     private var snapshotJob: Job? = null
     private var uptimeJob: Job? = null
     private var visible = false
@@ -81,6 +88,35 @@ internal class CatalogDashboardViewModel(
     private val controlMutex = Mutex()
     private val snapshotReducer = DashboardSnapshotReducer(totalMemoryBytes)
     private val trafficReducer = TrafficTimelineReducer()
+
+    init {
+        _state.update {
+            it.copy(latencyTargets = parseLatencyTargets(prefs.getString(LATENCY_TARGETS_KEY, null)))
+        }
+    }
+
+    /** 重测全部延迟目标；结果按 URL 记住，未测的键不存在，失败写 null。 */
+    fun probeLatencyTargets() {
+        val targets = _state.value.latencyTargets
+        if (targets.isEmpty()) return
+        latencyJob?.cancel()
+        latencyJob = viewModelScope.launch {
+            _state.update { it.copy(latencyTesting = true) }
+            targets.forEach { target ->
+                val millis = probeLatencyMillis(target.url)
+                _state.update { it.copy(latencyValues = it.latencyValues + (target.url to millis)) }
+            }
+            _state.update { it.copy(latencyTesting = false) }
+        }
+    }
+
+    /** 保存编辑后的目标列表并立刻重测。 */
+    fun setLatencyTargets(urls: List<String>) {
+        val targets = rebuildLatencyTargets(urls, _state.value.latencyTargets)
+        prefs.edit { putString(LATENCY_TARGETS_KEY, serializeLatencyTargets(targets)) }
+        _state.update { it.copy(latencyTargets = targets, latencyValues = emptyMap()) }
+        probeLatencyTargets()
+    }
 
     fun setAvailability(availability: ModuleAvailability?) {
         val previous = _state.value
@@ -110,6 +146,7 @@ internal class CatalogDashboardViewModel(
     fun setVisible(visible: Boolean) {
         this.visible = visible
         if (visible) {
+            probeLatencyTargets()
             if (_state.value.connected) {
                 refreshSnapshot()
                 startUptimeTicker()

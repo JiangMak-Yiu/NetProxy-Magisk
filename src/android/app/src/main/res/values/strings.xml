@@ -36,6 +36,13 @@
     <string name="collecting_data">Collecting data…</string>
     <string name="dashboard_lan_ip">Local IP</string>
     <string name="dashboard_total_traffic">Total traffic</string>
+    <string name="dashboard_latency_targets">Latency targets</string>
+    <string name="dashboard_latency_edit">Edit targets</string>
+    <string name="dashboard_latency_retest">Test again</string>
+    <string name="dashboard_latency_slot">Target %1$d</string>
+    <string name="dashboard_latency_testing">Testing…</string>
+    <string name="dashboard_latency_failed">Failed</string>
+    <string name="dashboard_latency_reset">Defaults</string>
     <string name="dashboard_traffic">↑ %1$s   ↓ %2$s</string>
     <string name="dashboard_outbound_mode">Outbound mode</string>
     <string name="dashboard_mode_rule">Rule</string>

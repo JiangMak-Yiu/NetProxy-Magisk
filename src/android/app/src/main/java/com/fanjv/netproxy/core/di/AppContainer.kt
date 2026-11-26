@@ -35,9 +35,9 @@ internal class AppContainer(context: Context) {
     val moduleEnvironment = AndroidModuleEnvironment(appContext, apiClient)
     val nodeImportStore = NodeImportStore(appContext)
     val appPackageRepository = AppPackageRepository(apiClient)
-    val themeManager = ThemeManager(
-        appContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-    )
+    /** 共享设置存储（主题偏好、仪表盘延迟目标等）。 */
+    val preferences = appContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    val themeManager = ThemeManager(preferences)
     val viewModelFactory = NetProxyViewModelFactory(this)
 
     private fun reportConfigurationSaveFailure(message: String) {

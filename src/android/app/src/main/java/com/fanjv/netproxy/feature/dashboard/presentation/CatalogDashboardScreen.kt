@@ -160,6 +160,17 @@ internal fun CatalogDashboardScreen(
 
                 item { Spacer(Modifier.height(12.dp)) }
                 item {
+                    LatencyTargetsCard(
+                        targets = state.latencyTargets,
+                        values = state.latencyValues,
+                        testing = state.latencyTesting,
+                        onRefresh = viewModel::probeLatencyTargets,
+                        onSaveTargets = viewModel::setLatencyTargets,
+                    )
+                }
+
+                item { Spacer(Modifier.height(12.dp)) }
+                item {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         InfoRow(
                             title = stringResource(R.string.dashboard_lan_ip),

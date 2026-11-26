@@ -42,6 +42,13 @@
     <string name="collecting_data">正在收集数据…</string>
     <string name="dashboard_lan_ip">内网 IP</string>
     <string name="dashboard_total_traffic">累计流量</string>
+    <string name="dashboard_latency_targets">延迟目标</string>
+    <string name="dashboard_latency_edit">编辑目标</string>
+    <string name="dashboard_latency_retest">重新测速</string>
+    <string name="dashboard_latency_slot">目标 %1$d</string>
+    <string name="dashboard_latency_testing">测速中…</string>
+    <string name="dashboard_latency_failed">失败</string>
+    <string name="dashboard_latency_reset">恢复默认</string>
     <string name="dashboard_traffic">↑ %1$s   ↓ %2$s</string>
     <string name="dashboard_outbound_mode">出站模式</string>
     <string name="dashboard_mode_rule">规则</string>

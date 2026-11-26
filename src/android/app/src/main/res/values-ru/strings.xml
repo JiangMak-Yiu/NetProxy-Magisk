@@ -36,6 +36,13 @@
     <string name="collecting_data">Сбор данных…</string>
     <string name="dashboard_lan_ip">Локальный IP</string>
     <string name="dashboard_total_traffic">Общий трафик</string>
+    <string name="dashboard_latency_targets">Цели задержки</string>
+    <string name="dashboard_latency_edit">Изменить цели</string>
+    <string name="dashboard_latency_retest">Проверить заново</string>
+    <string name="dashboard_latency_slot">Цель %1$d</string>
+    <string name="dashboard_latency_testing">Проверка…</string>
+    <string name="dashboard_latency_failed">Ошибка</string>
+    <string name="dashboard_latency_reset">По умолчанию</string>
     <string name="dashboard_traffic">↑ %1$s   ↓ %2$s</string>
     <string name="dashboard_outbound_mode">Режим маршрутизации</string>
     <string name="dashboard_mode_rule">По правилам</string>

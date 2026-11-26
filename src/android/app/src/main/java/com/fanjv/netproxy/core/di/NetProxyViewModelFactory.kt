@@ -31,7 +31,8 @@ internal class NetProxyViewModelFactory(
             ModuleAccessViewModel::class.java -> ModuleAccessViewModel(container.moduleEnvironment)
             CatalogDashboardViewModel::class.java -> CatalogDashboardViewModel(
                 container.serviceRepository,
-                container.moduleEnvironment.totalMemoryBytes
+                container.moduleEnvironment.totalMemoryBytes,
+                container.preferences
             )
 
             CatalogNodesViewModel::class.java -> CatalogNodesViewModel(
