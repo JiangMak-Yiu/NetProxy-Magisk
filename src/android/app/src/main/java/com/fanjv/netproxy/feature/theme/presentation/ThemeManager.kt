@@ -31,6 +31,7 @@ class ThemeManager(prefs: SharedPreferences) {
                 enablePredictiveBack = p.enablePredictiveBack,
                 enableSmoothCorner = p.enableSmoothCorner,
                 pageScale = p.pageScale,
+                floatingBottomBar = p.floatingBottomBar,
             )
         )
         state = _state.asStateFlow()
@@ -79,6 +80,11 @@ class ThemeManager(prefs: SharedPreferences) {
     fun setPageScale(scale: Float) {
         store.setPageScale(scale)
         _state.update { it.copy(pageScale = scale) }
+    }
+
+    fun setFloatingBottomBar(enabled: Boolean) {
+        store.setFloatingBottomBar(enabled)
+        _state.update { it.copy(floatingBottomBar = enabled) }
     }
 }
 

@@ -252,6 +252,8 @@
     <string name="settings_smooth_corner_summary">Use Miuix smooth corners throughout the interface</string>
     <string name="settings_enable_predictive_back">Predictive back gesture</string>
     <string name="settings_enable_predictive_back_summary">Enable predictive back animations on Android 14 and later</string>
+    <string name="settings_floating_bottom_bar">Floating navigation bar</string>
+    <string name="settings_floating_bottom_bar_summary">Detach the bottom bar from the screen edge and round its corners</string>
     <string name="settings_page_scale">Interface scale</string>
     <string name="settings_page_scale_summary">Adjust the scale of the entire interface</string>
     <string name="refresh_pulling">Pull to refresh</string>

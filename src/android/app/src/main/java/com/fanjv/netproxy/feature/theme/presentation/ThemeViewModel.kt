@@ -19,5 +19,6 @@ internal class ThemeViewModel(
     fun setEnablePredictiveBack(enabled: Boolean) = manager.setEnablePredictiveBack(enabled)
     fun setEnableSmoothCorner(enabled: Boolean) = manager.setEnableSmoothCorner(enabled)
     fun setPageScale(scale: Float) = manager.setPageScale(scale)
+    fun setFloatingBottomBar(enabled: Boolean) = manager.setFloatingBottomBar(enabled)
 }
 

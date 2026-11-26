@@ -252,6 +252,8 @@
     <string name="settings_smooth_corner_summary">Использовать плавные углы Miuix</string>
     <string name="settings_enable_predictive_back">Предиктивный жест «Назад»</string>
     <string name="settings_enable_predictive_back_summary">Анимация предиктивного возврата в Android 14 и новее</string>
+    <string name="settings_floating_bottom_bar">Плавающая панель навигации</string>
+    <string name="settings_floating_bottom_bar_summary">Отделить нижнюю панель от края экрана и скруглить углы</string>
     <string name="settings_page_scale">Масштаб интерфейса</string>
     <string name="settings_page_scale_summary">Изменить масштаб всего интерфейса</string>
     <string name="refresh_pulling">Потяните для обновления</string>

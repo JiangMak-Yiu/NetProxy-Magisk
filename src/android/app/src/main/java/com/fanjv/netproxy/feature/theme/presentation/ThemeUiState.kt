@@ -13,5 +13,6 @@ data class ThemeUiState(
     val enableBlur: Boolean = true,
     val enablePredictiveBack: Boolean = false,
     val enableSmoothCorner: Boolean = true,
-    val pageScale: Float = 1.0f
+    val pageScale: Float = 1.0f,
+    val floatingBottomBar: Boolean = false
 )

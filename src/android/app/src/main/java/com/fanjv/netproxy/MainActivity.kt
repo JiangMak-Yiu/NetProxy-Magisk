@@ -369,6 +369,7 @@ private fun MainPager(
                 mainState = mainPagerState,
                 blurBackdrop = blurBackdrop,
                 items = navItems,
+                floating = themeState.floatingBottomBar,
             )
         }
     ) { innerPadding ->

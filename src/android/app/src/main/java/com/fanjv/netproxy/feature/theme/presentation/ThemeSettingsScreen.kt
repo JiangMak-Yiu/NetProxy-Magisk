@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RoundedCorner
 import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.Wallpaper
+import androidx.compose.material.icons.rounded.ViewAgenda
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -306,6 +307,22 @@ internal fun ThemeSettingsScreen(
                     keyPrefix = "theme_navigation",
                     outerTopPadding = 12.dp,
                     items = buildList {
+                        add(CardItem("floatingBar") {
+                            SwitchPreference(
+                                title = stringResource(R.string.settings_floating_bottom_bar),
+                                summary = stringResource(R.string.settings_floating_bottom_bar_summary),
+                                startAction = {
+                                    Icon(
+                                        Icons.Rounded.ViewAgenda,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = null,
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                checked = theme.floatingBottomBar,
+                                onCheckedChange = viewModel::setFloatingBottomBar
+                            )
+                        })
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             add(CardItem("predictiveBack") {
                                 SwitchPreference(

@@ -27,7 +27,8 @@ internal class ThemePreferenceStore(
             enableBlur = prefs.getBoolean("enable_blur", true),
             enablePredictiveBack = prefs.getBoolean("enable_predictive_back", false),
             enableSmoothCorner = prefs.getBoolean("enable_smooth_corner", true),
-            pageScale = prefs.getFloat("page_scale", 1.0f)
+            pageScale = prefs.getFloat("page_scale", 1.0f),
+            floatingBottomBar = prefs.getBoolean("floating_bottom_bar", false)
         )
     }
 
@@ -61,6 +62,9 @@ internal class ThemePreferenceStore(
     fun setEnableSmoothCorner(enabled: Boolean) =
         prefs.edit { putBoolean("enable_smooth_corner", enabled) }
 
+    fun setFloatingBottomBar(enabled: Boolean) =
+        prefs.edit { putBoolean("floating_bottom_bar", enabled) }
+
     fun setPageScale(scale: Float) = prefs.edit { putFloat("page_scale", scale) }
 }
 
@@ -74,4 +78,5 @@ internal data class ThemePreferencesSnapshot(
     val enablePredictiveBack: Boolean,
     val enableSmoothCorner: Boolean,
     val pageScale: Float,
+    val floatingBottomBar: Boolean,
 )
