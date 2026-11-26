@@ -122,17 +122,18 @@ internal fun LandingIpCard(
             onDismissRequest = { showDetails = false },
         ) {
             Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                val tagsText = if (info.tags.isEmpty()) {
+                    stringResource(R.string.ip_tags_none)
+                } else {
+                    info.tags.map { tagLabel(it) }.joinToString(" / ")
+                }
                 DetailRow(stringResource(R.string.ip_address), info.ip)
                 HorizontalDivider()
                 DetailRow(stringResource(R.string.ip_level), levelLabel(info.level), levelColor(info.level))
                 HorizontalDivider()
                 DetailRow(stringResource(R.string.ip_type), typeLabel(info.networkType))
                 HorizontalDivider()
-                DetailRow(
-                    stringResource(R.string.ip_tags),
-                    info.tags.takeIf { it.isNotEmpty() }?.joinToString(" / ") { tagLabel(it) }
-                        ?: stringResource(R.string.ip_tags_none),
-                )
+                DetailRow(stringResource(R.string.ip_tags), tagsText)
                 HorizontalDivider()
                 DetailRow(stringResource(R.string.ip_org), info.isp.ifBlank { "--" })
                 HorizontalDivider()
