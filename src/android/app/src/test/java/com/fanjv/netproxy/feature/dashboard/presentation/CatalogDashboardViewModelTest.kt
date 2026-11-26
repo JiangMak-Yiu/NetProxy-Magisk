@@ -1,6 +1,8 @@
 package com.fanjv.netproxy.feature.dashboard.presentation
 
+import android.content.SharedPreferences
 import com.fanjv.netproxy.core.api.*
+import java.lang.reflect.Proxy
 
 import com.fanjv.netproxy.core.module.ModuleAvailability
 import com.fanjv.netproxy.core.module.ModuleConnectionState
@@ -39,8 +41,21 @@ class CatalogDashboardViewModelTest {
 
     private fun model(scope: CoroutineScope, transport: Transport) = CatalogDashboardViewModel(
         ServiceRepository(ModuleApiClient(transport = transport)),
-        1_000L, scope,
+        1_000L,
+        preferences(),
+        scope,
     ).apply { setAvailability(ModuleAvailability(ModuleConnectionState.READY)) }
+
+    /** 只读空设置：这一组测试不涉及延迟目标持久化。 */
+    private fun preferences(): SharedPreferences = Proxy.newProxyInstance(
+        SharedPreferences::class.java.classLoader,
+        arrayOf(SharedPreferences::class.java),
+    ) { _, method, arguments ->
+        when (method.name) {
+            "getString" -> arguments!![1]
+            else -> error("Unexpected SharedPreferences call: ${method.name}")
+        }
+    } as SharedPreferences
 
     private suspend fun CatalogDashboardViewModel.available() = withTimeout(5_000) {
         state.first { it.connected }
