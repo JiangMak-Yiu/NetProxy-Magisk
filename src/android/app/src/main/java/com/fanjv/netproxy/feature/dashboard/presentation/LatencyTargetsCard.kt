@@ -42,6 +42,7 @@ internal fun LatencyTargetsCard(
     targets: List<LatencyTarget>,
     values: Map<String, Long?>,
     testing: Boolean,
+    serviceReady: Boolean,
     onRefresh: () -> Unit,
     onSaveTargets: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
@@ -66,11 +67,11 @@ internal fun LatencyTargetsCard(
                     tint = colorScheme.onSurfaceVariantSummary,
                 )
             }
-            IconButton(onClick = onRefresh, enabled = !testing) {
+            IconButton(onClick = onRefresh, enabled = !testing && serviceReady) {
                 Icon(
                     imageVector = Icons.Rounded.Refresh,
                     contentDescription = stringResource(R.string.dashboard_latency_retest),
-                    tint = if (testing) colorScheme.onSurfaceVariantSummary else colorScheme.primary,
+                    tint = if (testing || !serviceReady) colorScheme.onSurfaceVariantSummary else colorScheme.primary,
                 )
             }
         }
@@ -78,9 +79,17 @@ internal fun LatencyTargetsCard(
             if (index == 0) HorizontalDivider()
             InfoRow(
                 title = target.label,
-                content = latencyValueText(target.url, values, testing),
+                content = if (!serviceReady) {
+                    stringResource(R.string.ip_service_required)
+                } else {
+                    latencyValueText(target.url, values, testing)
+                },
                 icon = Icons.Rounded.Speed,
-                contentColor = latencyTint(target.url, values, testing),
+                contentColor = if (!serviceReady) {
+                    colorScheme.onSurfaceVariantSummary
+                } else {
+                    latencyTint(target.url, values, testing)
+                },
             )
         }
     }

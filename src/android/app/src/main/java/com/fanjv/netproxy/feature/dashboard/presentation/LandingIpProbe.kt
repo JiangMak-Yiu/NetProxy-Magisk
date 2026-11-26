@@ -69,10 +69,13 @@ internal fun countryFlag(code: String?): String {
     }
 }
 
-private fun landingClient(): OkHttpClient = OkHttpClient.Builder()
+private fun landingClient(): OkHttpClient = moduleProxiedClient()
+
+/** 所有需要「经过当前节点」的探测共用一个走 mixed 入站的 client。 */
+internal fun moduleProxiedClient(): OkHttpClient = OkHttpClient.Builder()
     .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", MIXED_INBOUND_PORT)))
-    .connectTimeout(4, TimeUnit.SECONDS)
-    .readTimeout(4, TimeUnit.SECONDS)
+    .connectTimeout(5, TimeUnit.SECONDS)
+    .readTimeout(5, TimeUnit.SECONDS)
     .callTimeout(6, TimeUnit.SECONDS)
     .retryOnConnectionFailure(false)
     .build()

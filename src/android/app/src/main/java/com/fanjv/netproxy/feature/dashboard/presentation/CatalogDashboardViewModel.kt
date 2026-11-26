@@ -103,6 +103,11 @@ internal class CatalogDashboardViewModel(
     fun probeLatencyTargets() {
         val targets = _state.value.latencyTargets
         if (targets.isEmpty()) return
+        if (!_state.value.isReady) {
+            // 探测走 mixed 入站，服务没起来时测不到「经过当前节点」的延迟
+            _state.update { it.copy(latencyValues = emptyMap(), latencyTesting = false) }
+            return
+        }
         latencyJob?.cancel()
         latencyJob = viewModelScope.launch {
             _state.update { it.copy(latencyTesting = true) }
@@ -199,8 +204,10 @@ internal class CatalogDashboardViewModel(
         runOperation(action) {
             repository.action(action)
             if (action == "start") {
+                _state.update { it.copy(landingIp = null) }
                 UiText.Resource(R.string.dashboard_service_started)
             } else {
+                _state.update { it.copy(landingIp = null, latencyValues = emptyMap()) }
                 UiText.Resource(R.string.dashboard_service_stopped)
             }
         }

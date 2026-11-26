@@ -164,6 +164,7 @@ internal fun CatalogDashboardScreen(
                         targets = state.latencyTargets,
                         values = state.latencyValues,
                         testing = state.latencyTesting,
+                        serviceReady = state.isReady,
                         onRefresh = viewModel::probeLatencyTargets,
                         onSaveTargets = viewModel::setLatencyTargets,
                     )

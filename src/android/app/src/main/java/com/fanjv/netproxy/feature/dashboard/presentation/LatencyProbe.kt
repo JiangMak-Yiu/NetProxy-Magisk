@@ -5,7 +5,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.concurrent.TimeUnit
 
 /** 仪表盘「延迟目标」的一项：显示名 + 探测地址。 */
 internal data class LatencyTarget(val label: String, val url: String)
@@ -53,12 +52,7 @@ internal fun rebuildLatencyTargets(urls: List<String>, previous: List<LatencyTar
         )
     }.ifEmpty { DefaultLatencyTargets }
 
-private val latencyProbeClient = OkHttpClient.Builder()
-    .connectTimeout(5, TimeUnit.SECONDS)
-    .readTimeout(5, TimeUnit.SECONDS)
-    .callTimeout(6, TimeUnit.SECONDS)
-    .retryOnConnectionFailure(false)
-    .build()
+private val latencyProbeClient: OkHttpClient by lazy { moduleProxiedClient() }
 
 /** HEAD 请求探测一次往返延迟（毫秒）；失败或超时返回 null。 */
 internal suspend fun probeLatencyMillis(url: String): Long? = withContext(Dispatchers.IO) {
