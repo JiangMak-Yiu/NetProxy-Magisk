@@ -131,6 +131,7 @@ dependencies {
     implementation(libs.miuix.nav)
     implementation(libs.miuix.preference)
     implementation(libs.miuix.blur)
+    implementation(libs.miuix.glass)
     implementation(libs.miuix.squircle)
     implementation(libs.scripta.editor)
     implementation(libs.androidx.navigationevent.compose)
