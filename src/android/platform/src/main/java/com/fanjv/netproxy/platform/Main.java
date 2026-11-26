@@ -43,7 +43,7 @@ import java.util.concurrent.Future;
 
 public final class Main {
     public static final String MANAGER_PACKAGE = "com.fanjv.netproxy";
-    public static final String MANAGER_CERTIFICATE_SHA256 = "723e324ffc0564c20f51557fde05287d3b8695fa84a53da60b69154fa8458813";
+    public static final String MANAGER_CERTIFICATE_SHA256 = "b35549ca5d05357a8a49ab1928bc83ca436adb9c8ebac71748d1a6a658d2654f";
     private static final String AUTHORITY = MANAGER_PACKAGE + ".connection";
     private static final int INPUT_LIMIT = 64 * 1024;
     private static final int ICON_SIZE = 128;
