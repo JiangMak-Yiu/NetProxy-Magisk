@@ -52,7 +52,7 @@ runs:
       shell: bash
       env:
         NETPROXY_CI_BUILD_DIR: ${{ runner.temp }}/netproxy-build
-        NETPROXY_TELEMETRY_REQUIRED: '1'
+        NETPROXY_TELEMETRY_REQUIRED: '0'
         POSTHOG_PROJECT_TOKEN: ${{ inputs.posthog-project-token }}
         POSTHOG_HOST: ${{ inputs.posthog-host }}
       run: |
