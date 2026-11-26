@@ -32,7 +32,10 @@ val managerBuildId = providers.gradleProperty("netproxyManagerBuildId").orNull ?
 android {
     namespace = "com.fanjv.netproxy"
     compileSdk {
-        version = release(37)
+        // miuix 0.9.5 (glass) AAR metadata requires API 37.2
+        version = release(37) {
+            minorApiLevel = 2
+        }
     }
 
     compileOptions {
