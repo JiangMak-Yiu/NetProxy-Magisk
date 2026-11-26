@@ -53,6 +53,7 @@ class CatalogDashboardViewModelTest {
     ) { _, method, arguments ->
         when (method.name) {
             "getString" -> arguments!![1]
+            "getLong" -> arguments!![1]
             else -> error("Unexpected SharedPreferences call: ${method.name}")
         }
     } as SharedPreferences

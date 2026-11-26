@@ -90,7 +90,17 @@ internal class CatalogDashboardViewModel(
     private var visible = false
     private var stateRevision = 0L
     private val controlMutex = Mutex()
-    private val snapshotReducer = DashboardSnapshotReducer(totalMemoryBytes)
+    private val snapshotReducer = DashboardSnapshotReducer(
+        totalMemoryBytes = totalMemoryBytes,
+        initialDownloadOffset = prefs.getLong(TRAFFIC_TOTAL_DOWNLOAD_KEY, 0L),
+        initialUploadOffset = prefs.getLong(TRAFFIC_TOTAL_UPLOAD_KEY, 0L),
+        onOffsetChange = { download, upload ->
+            prefs.edit {
+                putLong(TRAFFIC_TOTAL_DOWNLOAD_KEY, download)
+                putLong(TRAFFIC_TOTAL_UPLOAD_KEY, upload)
+            }
+        },
+    )
     private val trafficReducer = TrafficTimelineReducer()
 
     init {

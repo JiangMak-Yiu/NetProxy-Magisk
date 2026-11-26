@@ -80,6 +80,48 @@ class DashboardSnapshotReducerTest {
         assertEquals(listOf("Office", "Direct"), state.availableOutboundModes)
     }
 
+    @Test
+    fun `accumulates totals across core restarts`() {
+        var persistedDown = 0L
+        var persistedUp = 0L
+        var current = CatalogDashboardUiState()
+        val reducer = DashboardSnapshotReducer(
+            totalMemoryBytes = 1,
+            onOffsetChange = { down, up ->
+                persistedDown = down
+                persistedUp = up
+            },
+        )
+
+        current = reducer.reduce(current, service(download = 1_000, upload = 400), 1_000, "--")
+        assertEquals(1_000, current.downloadTotal)
+        assertEquals(400, current.uploadTotal)
+
+        // 核心重启，计数归零：累计值不倒退
+        current = reducer.reduce(current, service(download = 0, upload = 0), 2_000, "--")
+        assertEquals(1_000, current.downloadTotal)
+        assertEquals(400, current.uploadTotal)
+        assertEquals(1_000, persistedDown)
+        assertEquals(400, persistedUp)
+
+        // 新会话继续往上加
+        current = reducer.reduce(current, service(download = 500, upload = 100), 3_000, "--")
+        assertEquals(1_500, current.downloadTotal)
+        assertEquals(500, current.uploadTotal)
+    }
+
+    @Test
+    fun `restores offsets from preferences`() {
+        val state = DashboardSnapshotReducer(
+            totalMemoryBytes = 1,
+            initialDownloadOffset = 9_000,
+            initialUploadOffset = 3_000,
+        ).reduce(CatalogDashboardUiState(), service(download = 700, upload = 200), 1_000, "--")
+
+        assertEquals(9_700, state.downloadTotal)
+        assertEquals(3_200, state.uploadTotal)
+    }
+
     private fun service(
         pid: Int = 10,
         readyAt: Long = 1,
