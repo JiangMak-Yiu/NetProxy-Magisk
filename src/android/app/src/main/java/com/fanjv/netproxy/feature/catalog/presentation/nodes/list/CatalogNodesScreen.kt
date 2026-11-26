@@ -148,11 +148,11 @@ internal fun CatalogNodesScreen(
     }
     val pullToRefreshState = rememberPullToRefreshState()
     val snackbarHostState = rememberAppSnackbarHostState()
-    val refreshTexts = listOf(
-        stringResource(R.string.refresh_pulling),
-        stringResource(R.string.refresh_release),
-        stringResource(R.string.refresh_refresh),
-        stringResource(R.string.refresh_complete),
+    val pullTestTexts = listOf(
+        stringResource(R.string.node_pull_test_pulling),
+        stringResource(R.string.node_pull_test_release),
+        stringResource(R.string.node_pull_test_testing),
+        stringResource(R.string.node_pull_test_complete),
     )
 
     LifecycleResumeEffect(isActive) {
@@ -259,11 +259,19 @@ internal fun CatalogNodesScreen(
                 )
 
                 else -> PullToRefresh(
-                    isRefreshing = state.loading,
-                    onRefresh = { viewModel.refresh() },
+                    isRefreshing = state.loading || state.operation == "delay",
+                    onRefresh = {
+                        // 下滑 = 一键测当前分组延迟；没有节点时退回普通刷新
+                        val group = selectedGroup
+                        if (group != null && group.nodes.isNotEmpty() && state.operation.isEmpty()) {
+                            viewModel.testGroupDelay(group.group.id)
+                        } else {
+                            viewModel.refresh()
+                        }
+                    },
                     pullToRefreshState = pullToRefreshState,
                     topAppBarScrollBehavior = scrollBehavior,
-                    refreshTexts = refreshTexts,
+                    refreshTexts = pullTestTexts,
                     contentPadding = PaddingValues(
                         top = innerPadding.calculateTopPadding() +
                             if (layoutStyle == 0) 6.dp else 0.dp,

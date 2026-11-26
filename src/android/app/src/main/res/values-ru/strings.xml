@@ -53,7 +53,11 @@
     <string name="latency_testing">Проверка…</string>
     <string name="latency_failed">Ошибка проверки</string>
     <string name="latency_timeout">Тайм-аут</string>
-    <string name="node_test_current_group">Проверить задержку группы</string>
+    <string name="node_test_current_group">Проверить задержку текущей группы</string>
+    <string name="node_pull_test_pulling">Потяните, чтобы проверить группу</string>
+    <string name="node_pull_test_release">Отпустите для запуска проверки</string>
+    <string name="node_pull_test_testing">Проверка задержки</string>
+    <string name="node_pull_test_complete">Проверка завершена</string>
     <string name="node_display_settings">Отображение узлов</string>
     <string name="node_empty">Нет доступных узлов</string>
     <string name="node_layout_style">Вид списка</string>

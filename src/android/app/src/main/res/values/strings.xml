@@ -53,7 +53,11 @@
     <string name="latency_testing">Testing…</string>
     <string name="latency_failed">Test failed</string>
     <string name="latency_timeout">Timeout</string>
-    <string name="node_test_current_group">Test group latency</string>
+    <string name="node_test_current_group">Test current group latency</string>
+    <string name="node_pull_test_pulling">Pull to test the current group</string>
+    <string name="node_pull_test_release">Release to start testing</string>
+    <string name="node_pull_test_testing">Testing latency</string>
+    <string name="node_pull_test_complete">Latency test finished</string>
     <string name="node_display_settings">Node display</string>
     <string name="node_empty">No nodes available</string>
     <string name="node_layout_style">Layout</string>

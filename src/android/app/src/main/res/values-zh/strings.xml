@@ -62,6 +62,10 @@
     <string name="latency_failed">测试失败</string>
     <string name="latency_timeout">超时</string>
     <string name="node_test_current_group">测试当前分组延迟</string>
+    <string name="node_pull_test_pulling">下拉可测当前分组延迟</string>
+    <string name="node_pull_test_release">松开开始测速</string>
+    <string name="node_pull_test_testing">正在测速</string>
+    <string name="node_pull_test_complete">测速完成</string>
     <string name="node_display_settings">节点显示设置</string>
     <string name="node_empty">还没有可用节点</string>
     <string name="node_layout_style">布局样式</string>
