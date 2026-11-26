@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -79,6 +80,7 @@ internal fun LatencyTargetsCard(
                 title = target.label,
                 content = latencyValueText(target.url, values, testing),
                 icon = Icons.Rounded.Speed,
+                contentColor = latencyTint(target.url, values, testing),
             )
         }
     }
@@ -144,3 +146,20 @@ private fun latencyValueText(url: String, values: Map<String, Long?>, testing: B
     val millis = values[url]
     return if (millis == null) stringResource(R.string.dashboard_latency_failed) else "$millis ms"
 }
+
+/** 直连延迟配色，色板与节点卡片一致：≤100ms 绿、≤300ms 橙、更慢或失败红。 */
+@Composable
+private fun latencyTint(url: String, values: Map<String, Long?>, testing: Boolean): Color {
+    if (!values.containsKey(url)) {
+        return if (testing) colorScheme.primary else colorScheme.onSurfaceVariantSummary
+    }
+    val millis = values[url] ?: return failureColor
+    return when {
+        millis <= 100L -> Color(0xFF32A852)
+        millis <= 300L -> Color(0xFFE39A20)
+        else -> failureColor
+    }
+}
+
+private val failureColor: Color
+    @Composable get() = if (MiuixTheme.isDynamicColor) colorScheme.error else Color(0xFFF05252)

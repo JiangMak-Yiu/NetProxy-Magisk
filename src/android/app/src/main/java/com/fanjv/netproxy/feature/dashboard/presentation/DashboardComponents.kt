@@ -204,7 +204,12 @@ private fun SpeedChart(
 
 /** 仪表盘中的单行摘要。 */
 @Composable
-internal fun InfoRow(title: String, content: String, icon: ImageVector) {
+internal fun InfoRow(
+    title: String,
+    content: String,
+    icon: ImageVector,
+    contentColor: Color = colorScheme.onSurfaceVariantActions
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,7 +225,7 @@ internal fun InfoRow(title: String, content: String, icon: ImageVector) {
         Text(
             content,
             style = MiuixTheme.textStyles.body2,
-            color = colorScheme.onSurfaceVariantActions
+            color = contentColor
         )
     }
 }
