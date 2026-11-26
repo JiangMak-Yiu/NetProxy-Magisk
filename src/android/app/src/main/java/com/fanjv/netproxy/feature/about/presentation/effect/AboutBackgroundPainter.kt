@@ -1,8 +1,8 @@
 package com.fanjv.netproxy.feature.about.presentation.effect
 
 import android.annotation.SuppressLint
-import top.yukonga.miuix.kmp.blur.asBrush
-import top.yukonga.miuix.kmp.shader.RuntimeShader
+import top.yukonga.miuix.kmp.material.RuntimeShader
+import top.yukonga.miuix.kmp.material.asBrush
 import kotlin.math.cos
 import kotlin.math.sin
 
