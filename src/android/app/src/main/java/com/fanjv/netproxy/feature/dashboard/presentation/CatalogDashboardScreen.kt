@@ -171,6 +171,16 @@ internal fun CatalogDashboardScreen(
 
                 item { Spacer(Modifier.height(12.dp)) }
                 item {
+                    LandingIpCard(
+                        info = state.landingIp,
+                        loading = state.landingIpLoading,
+                        message = state.landingIpError.resolve(),
+                        onRefresh = viewModel::refreshLandingIp,
+                    )
+                }
+
+                item { Spacer(Modifier.height(12.dp)) }
+                item {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         InfoRow(
                             title = stringResource(R.string.dashboard_lan_ip),

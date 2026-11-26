@@ -53,6 +53,9 @@ internal data class CatalogDashboardUiState(
     val latencyTargets: List<LatencyTarget> = DefaultLatencyTargets,
     val latencyValues: Map<String, Long?> = emptyMap(),
     val latencyTesting: Boolean = false,
+    val landingIp: LandingIpInfo? = null,
+    val landingIpLoading: Boolean = false,
+    val landingIpError: UiText = UiText.Empty,
     val operation: String = "",
     val notice: UiText = UiText.Empty,
     val noticeId: Long = 0
@@ -81,6 +84,7 @@ internal class CatalogDashboardViewModel(
     val state: StateFlow<CatalogDashboardUiState> = _state.asStateFlow()
     private var eventsJob: Job? = null
     private var latencyJob: Job? = null
+    private var landingIpJob: Job? = null
     private var snapshotJob: Job? = null
     private var uptimeJob: Job? = null
     private var visible = false
@@ -118,6 +122,26 @@ internal class CatalogDashboardViewModel(
         probeLatencyTargets()
     }
 
+    /** 通过模块 mixed 入站查当前节点的落地 IP 质量；服务未启动时直接报错。 */
+    fun refreshLandingIp() {
+        if (!_state.value.isReady) {
+            _state.update { it.copy(landingIpError = UiText.Resource(R.string.ip_service_required)) }
+            return
+        }
+        landingIpJob?.cancel()
+        landingIpJob = viewModelScope.launch {
+            _state.update { it.copy(landingIpLoading = true, landingIpError = UiText.Empty) }
+            val info = runCatching { probeLandingIp() }.getOrNull()
+            _state.update {
+                it.copy(
+                    landingIp = info ?: it.landingIp,
+                    landingIpLoading = false,
+                    landingIpError = if (info == null) UiText.Resource(R.string.ip_query_failed) else UiText.Empty,
+                )
+            }
+        }
+    }
+
     fun setAvailability(availability: ModuleAvailability?) {
         val previous = _state.value
         val available = availability?.available == true
@@ -147,6 +171,9 @@ internal class CatalogDashboardViewModel(
         this.visible = visible
         if (visible) {
             probeLatencyTargets()
+            if (!_state.value.isReady) {
+                _state.update { it.copy(landingIp = null, landingIpError = UiText.Empty) }
+            }
             if (_state.value.connected) {
                 refreshSnapshot()
                 startUptimeTicker()
