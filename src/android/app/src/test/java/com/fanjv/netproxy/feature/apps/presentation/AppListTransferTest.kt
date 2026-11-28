@@ -33,7 +33,7 @@ class AppListTransferTest {
             setOf("com.example.one", "com.example.two", "10:com.example.work"),
             text.lines().toSet(),
         )
-        assertFalse("0:" in text)
+        assertFalse(text.lines().any { it.startsWith("0:") })
     }
 
     @Test
