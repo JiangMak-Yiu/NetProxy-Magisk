@@ -131,6 +131,21 @@ internal class AppsViewModel(
         }
     }
 
+    /** 把导入的名单并进当前模式的列表（已有的不重复），返回新增项数。 */
+    fun importAppList(text: String): Int {
+        val incoming = parseAppListEntries(text)
+        if (incoming.isEmpty() || !policyConfirmed) return 0
+        var added = 0
+        editPolicy { config ->
+            val current = if (config.mode == "blacklist") config.bypassApps else config.proxyApps
+            val merged = (current + incoming).distinct()
+            added = merged.size - current.distinct().size
+            if (config.mode == "blacklist") config.copy(bypassApps = merged) else config.copy(proxyApps = merged)
+        }
+        requestPolicyFlush()
+        return added
+    }
+
     private fun editPolicy(transform: (AppProxyConfig) -> AppProxyConfig) {
         if (!policyConfirmed) return
         draftConfig = transform(draftConfig ?: confirmedConfig).takeIf(::policyChanged)

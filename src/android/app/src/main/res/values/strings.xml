@@ -249,6 +249,8 @@
     <string name="app_selected_first">Selected first</string>
     <string name="app_reverse_sort">Reverse order</string>
     <string name="app_show_package_name">Show package names</string>
+    <string name="app_list_import">Import list</string>
+    <string name="app_list_export">Export list</string>
     <string name="settings_section_proxy">Proxy configuration</string>
     <string name="settings_section_general">General settings</string>
     <string name="settings_section_support">Help and about</string>

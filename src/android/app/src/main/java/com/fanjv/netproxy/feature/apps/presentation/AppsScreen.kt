@@ -1,6 +1,9 @@
 package com.fanjv.netproxy.feature.apps.presentation
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Intent
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -147,6 +150,25 @@ internal fun AppsScreen(
     val apps by viewModel.state.collectAsStateWithLifecycle()
     val spacing = 10.dp
     val showAppControls = apps.hasLoadedApps && apps.appProxyEnabled
+    val context = LocalContext.current
+    val importAppList = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        val text = uri?.let { chosen ->
+            runCatching {
+                context.contentResolver.openInputStream(chosen)?.bufferedReader()?.use { it.readText() }
+            }.getOrNull()
+        }
+        if (text != null) viewModel.importAppList(text)
+    }
+    val exportAppList = {
+        val entries = if (apps.appProxyMode == "blacklist") apps.bypassApps else apps.proxyApps
+        if (entries.isNotEmpty()) {
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, serializeAppListEntries(entries))
+            }
+            context.startActivity(Intent.createChooser(send, context.getString(R.string.app_list_export)))
+        }
+    }
 
     val searchStatus = rememberSaveable(saver = SearchStatus.Saver) { SearchStatus("") }
     val listState = rememberLazyListState()
@@ -219,7 +241,7 @@ internal fun AppsScreen(
                                                     viewModel.setShowSystemApps(!apps.showSystemApps)
                                                     showTopPopup.value = false
                                                 },
-                                                optionSize = 4,
+                                                optionSize = 6,
                                                 index = 0
                                             )
                                             DropdownImpl(
@@ -229,7 +251,7 @@ internal fun AppsScreen(
                                                     viewModel.setSelectedFirst(!apps.appSelectedFirst)
                                                     showTopPopup.value = false
                                                 },
-                                                optionSize = 4,
+                                                optionSize = 6,
                                                 index = 1
                                             )
                                             DropdownImpl(
@@ -239,7 +261,7 @@ internal fun AppsScreen(
                                                     viewModel.setReverseSort(!apps.appReverseSort)
                                                     showTopPopup.value = false
                                                 },
-                                                optionSize = 4,
+                                                optionSize = 6,
                                                 index = 2
                                             )
                                             DropdownImpl(
@@ -249,8 +271,28 @@ internal fun AppsScreen(
                                                     viewModel.setShowPackageName(!apps.appShowPackageName)
                                                     showTopPopup.value = false
                                                 },
-                                                optionSize = 4,
+                                                optionSize = 6,
                                                 index = 3
+                                            )
+                                            DropdownImpl(
+                                                text = stringResource(R.string.app_list_import),
+                                                isSelected = false,
+                                                onSelectedIndexChange = {
+                                                    showTopPopup.value = false
+                                                    importAppList.launch(arrayOf("text/plain", "text/*"))
+                                                },
+                                                optionSize = 6,
+                                                index = 4
+                                            )
+                                            DropdownImpl(
+                                                text = stringResource(R.string.app_list_export),
+                                                isSelected = false,
+                                                onSelectedIndexChange = {
+                                                    showTopPopup.value = false
+                                                    exportAppList()
+                                                },
+                                                optionSize = 6,
+                                                index = 5
                                             )
                                         }
                                     }

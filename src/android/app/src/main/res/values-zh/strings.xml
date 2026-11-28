@@ -263,6 +263,8 @@
     <string name="app_selected_first">选中优先</string>
     <string name="app_reverse_sort">逆向排序</string>
     <string name="app_show_package_name">显示包名</string>
+    <string name="app_list_import">导入名单</string>
+    <string name="app_list_export">导出名单</string>
 
     <!-- Settings: Main -->
     <string name="settings_section_proxy">代理配置</string>

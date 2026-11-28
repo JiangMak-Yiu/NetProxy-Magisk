@@ -273,6 +273,31 @@ class AppsViewModelTest {
         assertEquals(0, transport.writes)
     }
 
+    @Test fun importedListMergesIntoCurrentModeAndIsWritten() = runBlocking {
+        val transport = Transport()
+        val vm = model(this, transport)
+        vm.load(); vm.loaded()
+        assertEquals(
+            2,
+            vm.importAppList("# backup\nalpha.example\n0:beta.example\nnot a package\n0:alpha.example"),
+        )
+        assertEquals(setOf("0:alpha.example", "0:beta.example"), vm.state.value.proxyApps)
+        assertTrue(vm.state.value.hasPendingPolicy)
+        assertTrue(vm.flushPolicy())
+        assertEquals(setOf("0:alpha.example", "0:beta.example"), transport.config.proxyApps.toSet())
+        assertEquals(emptyList<String>(), transport.config.bypassApps)
+    }
+
+    @Test fun emptyImportChangesNothing() = runBlocking {
+        val transport = Transport()
+        val vm = model(this, transport)
+        vm.load(); vm.loaded()
+        assertEquals(0, vm.importAppList(""))
+        assertFalse(vm.state.value.hasPendingPolicy)
+        assertTrue(vm.flushPolicy())
+        assertEquals(0, transport.writes)
+    }
+
     @Test fun queuedSaveOnlyIncludesSelectionAtItsTrigger() = runBlocking {
         val transport = Transport()
         val vm = model(this, transport)
