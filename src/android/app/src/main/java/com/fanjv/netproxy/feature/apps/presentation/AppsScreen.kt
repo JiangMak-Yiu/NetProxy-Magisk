@@ -151,6 +151,7 @@ internal fun AppsScreen(
     val spacing = 10.dp
     val showAppControls = apps.hasLoadedApps && apps.appProxyEnabled
     val context = LocalContext.current
+    val exportChooserTitle = stringResource(R.string.app_list_export)
     val importAppList = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         val text = uri?.let { chosen ->
             runCatching {
@@ -166,7 +167,7 @@ internal fun AppsScreen(
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, serializeAppListEntries(entries))
             }
-            context.startActivity(Intent.createChooser(send, context.getString(R.string.app_list_export)))
+            context.startActivity(Intent.createChooser(send, exportChooserTitle))
         }
     }
 
