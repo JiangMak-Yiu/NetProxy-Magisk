@@ -45,6 +45,12 @@
     <string name="dashboard_latency_targets">延迟目标</string>
     <string name="dashboard_latency_edit">编辑目标</string>
     <string name="dashboard_latency_retest">重新测速</string>
+    <string name="dashboard_widgets">仪表盘小组件</string>
+    <string name="dashboard_widget_speed">速度与服务</string>
+    <string name="dashboard_widget_system">CPU 与内存</string>
+    <string name="dashboard_widget_network">网络信息</string>
+    <string name="dashboard_widget_move_up">上移</string>
+    <string name="dashboard_widget_move_down">下移</string>
     <string name="dashboard_latency_slot">目标 %1$d</string>
     <string name="dashboard_latency_testing">测速中…</string>
     <string name="dashboard_latency_failed">失败</string>

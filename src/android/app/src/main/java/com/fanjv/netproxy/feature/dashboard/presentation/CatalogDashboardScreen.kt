@@ -21,9 +21,13 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Router
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -44,6 +48,7 @@ import com.fanjv.netproxy.core.ui.component.rememberBlurBackdrop
 import com.fanjv.netproxy.core.ui.resolve
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Text
@@ -72,6 +77,7 @@ internal fun CatalogDashboardScreen(
     val availability = LocalModuleAvailability.current
     LaunchedEffect(availability) { viewModel.setAvailability(availability) }
     val snackbarHostState = rememberAppSnackbarHostState()
+    var showWidgetEditor by remember { mutableStateOf(false) }
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop()
     val barColor = if (backdrop != null) Color.Transparent else colorScheme.surface
@@ -101,7 +107,16 @@ internal fun CatalogDashboardScreen(
                 TopAppBar(
                     color = barColor,
                     title = stringResource(R.string.dashboard),
-                    scrollBehavior = scrollBehavior
+                    scrollBehavior = scrollBehavior,
+                    actions = {
+                        IconButton(onClick = { showWidgetEditor = true }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Tune,
+                                contentDescription = stringResource(R.string.dashboard_widgets),
+                                tint = colorScheme.onSurface
+                            )
+                        }
+                    }
                 )
             }
         },
@@ -126,139 +141,151 @@ internal fun CatalogDashboardScreen(
                     item { DashboardWarning(state.serviceError) }
                 }
 
-                item {
-                    val serviceSummary = when {
-                        state.isStarting -> stringResource(R.string.service_starting)
-                        state.isStopping -> stringResource(R.string.service_stopping)
-                        state.isReady -> stringResource(
-                            R.string.dashboard_service_up,
-                            formatUptime(state.uptimeSeconds)
-                        )
-                        else -> stringResource(R.string.service_stopped)
-                    }
-                    SpeedChartCard(
-                        downloadSpeed = formatRate(state.downloadBytesPerSecond),
-                        uploadSpeed = formatRate(state.uploadBytesPerSecond),
-                        trafficSamples = state.trafficSamples,
-                        statusSummary = serviceSummary,
-                        isRunning = state.isReady,
-                        serviceControlEnabled = availability?.available == true && state.connected &&
-                            !state.loading &&
-                            !state.isServiceControlBusy,
-                        modifier = Modifier.padding(top = 12.dp),
-                        onToggleService = viewModel::toggleService
-                    )
-                }
-
-                item { Spacer(Modifier.height(12.dp)) }
-                item {
-                    SystemStatsSection(
-                        cpuUsage = state.cpuUsage,
-                        memoryUsage = state.memoryUsage
-                    )
-                }
-
-                item { Spacer(Modifier.height(12.dp)) }
-                item {
-                    LatencyTargetsCard(
-                        targets = state.latencyTargets,
-                        values = state.latencyValues,
-                        testing = state.latencyTesting,
-                        serviceReady = state.isReady,
-                        onRefresh = viewModel::probeLatencyTargets,
-                        onSaveTargets = viewModel::setLatencyTargets,
-                    )
-                }
-
-                item { Spacer(Modifier.height(12.dp)) }
-                item {
-                    LandingIpCard(
-                        info = state.landingIp,
-                        loading = state.landingIpLoading,
-                        message = state.landingIpError.resolve(),
-                        onRefresh = viewModel::refreshLandingIp,
-                    )
-                }
-
-                item { Spacer(Modifier.height(12.dp)) }
-                item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        InfoRow(
-                            title = stringResource(R.string.dashboard_lan_ip),
-                            content = state.internalIp,
-                            icon = Icons.Rounded.Router
-                        )
-                        InfoRow(
-                            title = stringResource(R.string.dashboard_total_traffic),
-                            content = stringResource(
-                                R.string.dashboard_traffic,
-                                formatBytes(state.uploadTotal),
-                                formatBytes(state.downloadTotal)
-                            ),
-                            icon = Icons.Rounded.DataUsage
-                        )
-                    }
-                }
-
-                item { Spacer(Modifier.height(12.dp)) }
-                item {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        val modeValues = state.availableOutboundModes
-                        val modeLabels = modeValues.map { mode ->
-                            when (mode) {
-                                "Rule" -> stringResource(R.string.dashboard_mode_rule)
-                                "Proxy" -> stringResource(R.string.dashboard_mode_proxy)
-                                "Direct" -> stringResource(R.string.dashboard_mode_direct)
-                                "RuleAllowAds" -> stringResource(R.string.dashboard_mode_rule_allow_ads)
-                                else -> mode
+                state.widgets.filter { it.enabled }.forEach { pref ->
+                    item(key = pref.widget.key) {
+                        Box(modifier = Modifier.padding(top = 12.dp)) {
+                            when (pref.widget) {
+                                DashboardWidget.Speed -> {
+                                    val serviceSummary = when {
+                                        state.isStarting -> stringResource(R.string.service_starting)
+                                        state.isStopping -> stringResource(R.string.service_stopping)
+                                        state.isReady -> stringResource(
+                                            R.string.dashboard_service_up,
+                                            formatUptime(state.uptimeSeconds)
+                                        )
+                                        else -> stringResource(R.string.service_stopped)
+                                    }
+                                    SpeedChartCard(
+                                        downloadSpeed = formatRate(state.downloadBytesPerSecond),
+                                        uploadSpeed = formatRate(state.uploadBytesPerSecond),
+                                        trafficSamples = state.trafficSamples,
+                                        statusSummary = serviceSummary,
+                                        isRunning = state.isReady,
+                                        serviceControlEnabled = availability?.available == true && state.connected &&
+                                            !state.loading &&
+                                            !state.isServiceControlBusy,
+                                        modifier = Modifier,
+                                        onToggleService = viewModel::toggleService
+                                    )
+                                }
+                                DashboardWidget.System -> {
+                                    SystemStatsSection(
+                                        cpuUsage = state.cpuUsage,
+                                        memoryUsage = state.memoryUsage
+                                    )
+                                }
+                                DashboardWidget.Latency -> {
+                                    LatencyTargetsCard(
+                                        targets = state.latencyTargets,
+                                        values = state.latencyValues,
+                                        testing = state.latencyTesting,
+                                        serviceReady = state.isReady,
+                                        onRefresh = viewModel::probeLatencyTargets,
+                                        onSaveTargets = viewModel::setLatencyTargets,
+                                    )
+                                }
+                                DashboardWidget.LandingIp -> {
+                                    LandingIpCard(
+                                        info = state.landingIp,
+                                        loading = state.landingIpLoading,
+                                        message = state.landingIpError.resolve(),
+                                        onRefresh = viewModel::refreshLandingIp,
+                                    )
+                                }
+                                DashboardWidget.Network -> {
+                                    Card(modifier = Modifier.fillMaxWidth()) {
+                                        InfoRow(
+                                            title = stringResource(R.string.dashboard_lan_ip),
+                                            content = state.internalIp,
+                                            icon = Icons.Rounded.Router
+                                        )
+                                        InfoRow(
+                                            title = stringResource(R.string.dashboard_total_traffic),
+                                            content = stringResource(
+                                                R.string.dashboard_traffic,
+                                                formatBytes(state.uploadTotal),
+                                                formatBytes(state.downloadTotal)
+                                            ),
+                                            icon = Icons.Rounded.DataUsage
+                                        )
+                                    }
+                                }
+                                DashboardWidget.Route -> {
+                                    Card(modifier = Modifier.fillMaxWidth()) {
+                                        val modeValues = state.availableOutboundModes
+                                        val modeLabels = modeValues.map { mode ->
+                                            when (mode) {
+                                                "Rule" -> stringResource(R.string.dashboard_mode_rule)
+                                                "Proxy" -> stringResource(R.string.dashboard_mode_proxy)
+                                                "Direct" -> stringResource(R.string.dashboard_mode_direct)
+                                                "RuleAllowAds" -> stringResource(R.string.dashboard_mode_rule_allow_ads)
+                                                else -> mode
+                                            }
+                                        }
+                                        val selectedModeIndex = modeValues.indexOf(state.outboundMode)
+                                        val modeItems = if (selectedModeIndex >= 0) {
+                                            modeLabels
+                                        } else {
+                                            listOf(
+                                                if (state.outboundMode == "unknown") stringResource(R.string.dashboard_mode_unknown)
+                                                else state.outboundMode
+                                            ) + modeLabels
+                                        }
+                                        OverlayDropdownPreference(
+                                            title = stringResource(R.string.dashboard_outbound_mode),
+                                            enabled = availability?.available == true && !state.loading,
+                                            items = modeItems,
+                                            selectedIndex = if (selectedModeIndex >= 0) selectedModeIndex else 0,
+                                            startAction = {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Rounded.AltRoute,
+                                                    contentDescription = null,
+                                                    tint = colorScheme.primary
+                                                )
+                                            },
+                                            onSelectedIndexChange = { index ->
+                                                val actualIndex = if (selectedModeIndex >= 0) index else index - 1
+                                                modeValues.getOrNull(actualIndex)?.let(viewModel::setMode)
+                                            }
+                                        )
+                                        ArrowPreference(
+                                            title = stringResource(R.string.dashboard_current_node),
+                                            enabled = availability?.available == true,
+                                            summary = state.currentNode.ifBlank {
+                                                stringResource(R.string.dashboard_not_selected)
+                                            },
+                                            startAction = {
+                                                Icon(
+                                                    imageVector = MiuixIcons.Link,
+                                                    contentDescription = null,
+                                                    tint = colorScheme.primary
+                                                )
+                                            },
+                                            onClick = onNavigateToNodes
+                                        )
+                                    }
+                                }
                             }
                         }
-                        val selectedModeIndex = modeValues.indexOf(state.outboundMode)
-                        val modeItems = if (selectedModeIndex >= 0) {
-                            modeLabels
-                        } else {
-                            listOf(
-                                if (state.outboundMode == "unknown") stringResource(R.string.dashboard_mode_unknown)
-                                else state.outboundMode
-                            ) + modeLabels
-                        }
-                        OverlayDropdownPreference(
-                            title = stringResource(R.string.dashboard_outbound_mode),
-                            enabled = availability?.available == true && !state.loading,
-                            items = modeItems,
-                            selectedIndex = if (selectedModeIndex >= 0) selectedModeIndex else 0,
-                            startAction = {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.AltRoute,
-                                    contentDescription = null,
-                                    tint = colorScheme.primary
-                                )
-                            },
-                            onSelectedIndexChange = { index ->
-                                val actualIndex = if (selectedModeIndex >= 0) index else index - 1
-                                modeValues.getOrNull(actualIndex)?.let(viewModel::setMode)
-                            }
-                        )
-                        ArrowPreference(
-                            title = stringResource(R.string.dashboard_current_node),
-                            enabled = availability?.available == true,
-                            summary = state.currentNode.ifBlank {
-                                stringResource(R.string.dashboard_not_selected)
-                            },
-                            startAction = {
-                                Icon(
-                                    imageVector = MiuixIcons.Link,
-                                    contentDescription = null,
-                                    tint = colorScheme.primary
-                                )
-                            },
-                            onClick = onNavigateToNodes
-                        )
                     }
                 }
                 item { Spacer(Modifier.height(80.dp + bottomPadding)) }
             }
         }
+    }
+
+    if (showWidgetEditor) {
+        DashboardWidgetEditorSheet(
+            widgets = state.widgets,
+            onMove = { from, to ->
+                viewModel.setDashboardWidgets(moveDashboardWidget(state.widgets, from, to))
+            },
+            onToggle = { widget ->
+                viewModel.setDashboardWidgets(toggleDashboardWidget(state.widgets, widget))
+            },
+            onReset = { viewModel.setDashboardWidgets(DefaultDashboardWidgets) },
+            onDismiss = { showWidgetEditor = false },
+        )
     }
 }
 

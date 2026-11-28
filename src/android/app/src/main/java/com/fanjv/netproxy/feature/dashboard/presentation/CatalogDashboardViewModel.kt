@@ -50,6 +50,7 @@ internal data class CatalogDashboardUiState(
     val memoryUsage: Float = 0f,
     val trafficSamples: List<TrafficSample> = emptyList(),
     val internalIp: String = "--",
+    val widgets: List<DashboardWidgetPref> = DefaultDashboardWidgets,
     val latencyTargets: List<LatencyTarget> = DefaultLatencyTargets,
     val latencyValues: Map<String, Long?> = emptyMap(),
     val latencyTesting: Boolean = false,
@@ -105,8 +106,17 @@ internal class CatalogDashboardViewModel(
 
     init {
         _state.update {
-            it.copy(latencyTargets = parseLatencyTargets(prefs.getString(LATENCY_TARGETS_KEY, null)))
+            it.copy(
+                latencyTargets = parseLatencyTargets(prefs.getString(LATENCY_TARGETS_KEY, null)),
+                widgets = parseDashboardWidgets(prefs.getString(DASHBOARD_WIDGETS_KEY, null)),
+            )
         }
+    }
+
+    /** 保存仪表盘小组件的显示与顺序，立即生效。 */
+    fun setDashboardWidgets(widgets: List<DashboardWidgetPref>) {
+        prefs.edit { putString(DASHBOARD_WIDGETS_KEY, serializeDashboardWidgets(widgets)) }
+        _state.update { it.copy(widgets = widgets) }
     }
 
     /** 重测全部延迟目标；结果按 URL 记住，未测的键不存在，失败写 null。 */

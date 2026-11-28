@@ -39,6 +39,12 @@
     <string name="dashboard_latency_targets">Latency targets</string>
     <string name="dashboard_latency_edit">Edit targets</string>
     <string name="dashboard_latency_retest">Test again</string>
+    <string name="dashboard_widgets">Dashboard widgets</string>
+    <string name="dashboard_widget_speed">Speed &amp; service</string>
+    <string name="dashboard_widget_system">CPU &amp; memory</string>
+    <string name="dashboard_widget_network">Network info</string>
+    <string name="dashboard_widget_move_up">Move up</string>
+    <string name="dashboard_widget_move_down">Move down</string>
     <string name="dashboard_latency_slot">Target %1$d</string>
     <string name="dashboard_latency_testing">Testing…</string>
     <string name="dashboard_latency_failed">Failed</string>
