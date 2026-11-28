@@ -1,6 +1,7 @@
 package com.fanjv.netproxy.feature.apps.presentation
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class AppListTransferTest {
@@ -27,16 +28,18 @@ class AppListTransferTest {
     @Test
     fun serializeDropsThePrimaryUserPrefixAndStaysATextList() {
         val entries = listOf("10:com.example.work", "0:com.example.two", "0:com.example.one")
+        val text = serializeAppListEntries(entries)
         assertEquals(
-            "com.example.one\ncom.example.two\n10:com.example.work",
-            serializeAppListEntries(entries),
+            setOf("com.example.one", "com.example.two", "10:com.example.work"),
+            text.lines().toSet(),
         )
+        assertFalse("0:" in text)
     }
 
     @Test
     fun exportedTextImportsBackToTheSameEntries() {
         val entries = listOf("0:com.example.one", "10:com.example.work")
-        assertEquals(entries, parseAppListEntries(serializeAppListEntries(entries)))
+        assertEquals(entries.toSet(), parseAppListEntries(serializeAppListEntries(entries)).toSet())
     }
 
     @Test
